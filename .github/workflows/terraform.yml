@@ -1,0 +1,49 @@
+name: Terraform
+
+on:
+  pull_request:
+    branches: [main]
+    paths: ["app/**", "terraform/**", ".github/workflows/terraform.yml"]
+  push:
+    branches: [main]
+    paths: ["app/**", "terraform/**", ".github/workflows/terraform.yml"]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+# Never run two deploys against the same state at once
+concurrency:
+  group: terraform
+  cancel-in-progress: false
+
+defaults:
+  run:
+    working-directory: terraform
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.10.5
+          # wrapper adds extra stdout that breaks $(terraform output -raw ...)
+          terraform_wrapper: false
+
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      - name: Format check
+        run: terraform fmt -check -recursive
+
+      - name: Init
+        run: >
+          terraform init -input=false
+          -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
+          -backend-config="region=${{ vars.AWS_REGION }}"
