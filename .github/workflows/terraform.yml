@@ -46,13 +46,13 @@ jobs:
           -backend-config="bucket=${{ vars.TF_STATE_BUCKET }}"
           -backend-config="region=${{ vars.AWS_REGION }}"
 
-      - name: Validate
+      - name: Terraforom Validate
         run: terraform validate
 
-      - name: Plan
+      - name: Deploy Plan
         run: terraform plan -input=false -out=tfplan
 
-      - name: Apply
+      - name: Deploy Apply
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: terraform apply -input=false tfplan
 
