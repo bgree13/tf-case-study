@@ -1,4 +1,4 @@
-name: Terraform
+name: Deploy Terraform Infrastructure
 
 on:
   pull_request:
@@ -56,3 +56,6 @@ jobs:
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         run: terraform apply -input=false tfplan
 
+      - name: Test API endpoint
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: curl --fail --silent --show-error "$(terraform output -raw api_url)health"
