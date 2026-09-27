@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Creates the GitHub OIDC provider and an IAM role that GitHub Actions can assume.
-# Usage: scripts/setup-github-oidc.sh <github-owner/repo> <state-bucket> [region]
+# Usage: scripts/setup-github-oidc.sh <github-repo> <state-bucket> [region]
+# <github-repo> must match the OIDC token's sub claim, which includes owner and repo IDs,
+# e.g. bgree13@20648213/tf-case-study@1389272771
 
 # Stop on the first error
 set -e
@@ -12,7 +14,7 @@ APP_NAME="tf-case-study"
 ROLE_NAME="$APP_NAME-github-actions"
 
 if [ -z "$REPO" ] || [ -z "$BUCKET" ]; then
-  echo "Usage: $0 <github-owner/repo> <state-bucket> [region]"
+  echo "Usage: $0 <github-repo> <state-bucket> [region]"
   exit 1
 fi
 
