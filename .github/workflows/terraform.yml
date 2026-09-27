@@ -23,7 +23,7 @@ defaults:
     working-directory: terraform
 
 jobs:
-  terraform:
+  tf-deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
