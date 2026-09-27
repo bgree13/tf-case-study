@@ -52,3 +52,7 @@ jobs:
       - name: Plan
         run: terraform plan -input=false -out=tfplan
 
+      - name: Apply
+        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+        run: terraform apply -input=false tfplan
+
